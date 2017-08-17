@@ -1,13 +1,12 @@
 /*
 Program: WetterStation 
-Version: 3
-Last change: 2017-05-13, 23:16
-Last changes by: Gernot Fattinger
+Version: 4
+Last change: 2017-08-15, 14:25
+Last changes by: Guenter Fattinger
 Changes:
-- Fixed RAM shortage by relocating static text to flash memory
-- Moved some of the html page text into a separate file (ExternerText.h)
-- Added code for daylight savings time handling and central european timezone
-- Added code for download of data file from SD card and download link
+- SDintervall von 10 auf 60 Sek.
+- Webseit intervall auf 5 Minuten
+- Energiedosis Berechnungsfaktor von 0.15 auf 0.06 geändert
 */
 #include <Ethernet.h>
 #include <Time.h>
@@ -24,7 +23,7 @@ Changes:
 #include "TimeFrameCount.h"
 #include "ExternerText.h";
 
-#define SDintervall 60              // Intervall für SD Karten Speicherung in Sekunden
+#define SDintervall 300             // Intervall für SD Karten Speicherung in Sekunden
 #define DHTPIN 5                    // Feuchtesensor 
 #define DHTTYPE DHT22               // DHT 22  (AM2302) Feuchtesensor
 #define HOEHE 644.0                 // Wetterstation über NN
@@ -250,7 +249,7 @@ float calcRadioaktivitaet()
   double hochzahl = (sensorRadioaktivitaet * 0.0109729087);
   double Potenz = pow(2.71828, hochzahl);
   float Energiedosis = (Potenz * 1.018203343);
-  Energiedosis = Energiedosis * 0.15;
+  Energiedosis = Energiedosis * 0.02;
   return Energiedosis;
 }
 
@@ -375,7 +374,7 @@ void loop()
             client.println(F("HTTP/1.1 200 OK"));
             client.println(F("Content-Type: text/html"));
             client.println(F("Connection: close"));          // the connection will be closed after completion of the response
-            client.println(F("Refresh: 10"));                 // refresh the page automatically every 10 sec
+            client.println(F("Refresh: 60"));                 // refresh the page automatically every 10 sec
             client.println();
             client.println(FS(header));
 
